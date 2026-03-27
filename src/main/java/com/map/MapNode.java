@@ -7,8 +7,7 @@ public class MapNode<K, V> extends AbstractNode<V> {
     public MapNode<K, V> next;
 
     public MapNode(K key, V value) {
+        super(value);
         this.key = key;
-        this.value = value;
     }
-
 }

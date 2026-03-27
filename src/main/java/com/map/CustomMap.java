@@ -42,7 +42,7 @@ public class CustomMap<K extends Comparable<K>, V> {
         if ((mapNode = table[hash]) == null) {
             table[hash] = new MapNode<>(key, value);
         } else {
-            if (mapNode instanceof TreeNode<K, V>) {
+            if (mapNode instanceof TreeNode<K, V> treeNode) {
 
             } else {
                 MapNode<K, V> next;
