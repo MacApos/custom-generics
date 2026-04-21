@@ -1,14 +1,24 @@
 package com.list;
 
-import com.AbstractNode;
+import com.collection.IndexBasedCollection;
+import com.collection.ValueBasedCollection;
 
-public class CustomLinkedList<V> {
+import java.util.function.Supplier;
+
+public class CustomLinkedList<V> implements IndexBasedCollection<V>, ValueBasedCollection<V> {
     private int size;
-    private AbstractNode<V> first;
-    private AbstractNode<V> last;
+    private Node<V> first;
+    private Node<V> last;
 
-    public int size() {
-        return size;
+    @SafeVarargs
+    public static <V> CustomLinkedList<V> of(V... values) {
+        CustomLinkedList<V> customLinkedList = new CustomLinkedList<>();
+        if (values != null) {
+            for (V value : values) {
+                customLinkedList.add(value);
+            }
+        }
+        return customLinkedList;
     }
 
     public V getFirst() {
@@ -25,35 +35,14 @@ public class CustomLinkedList<V> {
         }
     }
 
-    public boolean add(V value) {
-        return addNode(new ListNode<>(value));
-    }
-
-    private boolean addNode(AbstractNode<V> newNode) {
-        if (first == null) {
-            first = newNode;
-        } else {
-            AbstractNode<V> node = first;
-            do {
-                if (newNode.value.equals(node.value)) {
-                    return false;
-                }
-                node = node.next;
-            } while (node != null);
-            last.next = newNode;
+    private void checkValue(V value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Value is null");
         }
-        last = newNode;
-        size++;
-        return true;
     }
 
-    public V get(int index) {
-        return getNode(index).value;
-    }
-
-    private AbstractNode<V> getNode(int index) {
-        checkIndex(index);
-        AbstractNode<V> node = first;
+    private Node<V> getNodeByIndex(int index) {
+        Node<V> node = first;
         int i = 0;
         while (i++ != index) {
             node = node.next;
@@ -61,30 +50,46 @@ public class CustomLinkedList<V> {
         return node;
     }
 
-    public V set(int index, V newValue) {
-        return setNode(index, newValue).value;
+    private Node<V> getNodeByValue(V value) {
+        Node<V> node = first;
+        while (node != null) {
+            if (node.value.equals(value)) {
+                return node;
+            }
+            node = node.next;
+        }
+        return null;
     }
 
-    private AbstractNode<V> setNode(int index, V newValue) {
-        checkIndex(index);
-        AbstractNode<V> node = getNode(index);
+    private Node<V> getPrevNodeByValue(V value) {
+        Node<V> node = first;
+        while (node.next != null) {
+            if (node.next.value.equals(value)) {
+                return node;
+            }
+            node = node.next;
+        }
+        return null;
+    }
+
+    private V setNode(Node<V> node, V newValue) {
+        if (node == null) {
+            return null;
+        }
         node.value = newValue;
-        return node;
+        return node.value;
     }
 
-    public V remove(int index) {
-        return removeNode(index).value;
-    }
-
-    private AbstractNode<V> removeNode(int index) {
-        checkIndex(index);
-        AbstractNode<V> node;
-        AbstractNode<V> prev = null;
-        if (index == 0) {
-            node = first;
+    private V removeNode(boolean isFirst, Supplier<Node<V>> supplier) {
+        Node<V> prev = null;
+        Node<V> node = first;
+        if (isFirst) {
             first = first.next;
         } else {
-            prev = getNode(index - 1);
+            prev = supplier.get();
+            if (prev == null) {
+                return null;
+            }
             node = prev.next;
             prev.next = node.next;
         }
@@ -95,6 +100,67 @@ public class CustomLinkedList<V> {
         }
         node.next = null;
         size--;
-        return node;
+        return node.value;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean contains(V value) {
+        return getNodeByValue(value) == null;
+    }
+
+    @Override
+    public boolean add(V value) {
+        Node<V> newNode = new Node<>(value);
+        if (first == null) {
+            first = newNode;
+        } else {
+            last.next = newNode;
+        }
+        last = newNode;
+        size++;
+        return true;
+    }
+
+    @Override
+    public V get(int index) {
+        checkIndex(index);
+        return getNodeByIndex(index).value;
+    }
+
+    @Override
+    public V getValue(V value) {
+        checkValue(value);
+        Node<V> node = getNodeByValue(value);
+        return node == null ? null : node.value;
+    }
+
+    @Override
+    public V set(int index, V newValue) {
+        checkIndex(index);
+        checkValue(newValue);
+        return setNode(getNodeByIndex(index), newValue);
+    }
+
+    @Override
+    public V setValue(V oldValue, V newValue) {
+        checkValue(oldValue);
+        checkValue(newValue);
+        return setNode(getNodeByValue(oldValue), newValue);
+    }
+
+    @Override
+    public V remove(int index) {
+        checkIndex(index);
+        return removeNode(index == 0, () -> getNodeByIndex(index - 1));
+    }
+
+    @Override
+    public V removeValue(V value) {
+        checkValue(value);
+        return removeNode(first.value.equals(value), () -> getPrevNodeByValue(value));
     }
 }
