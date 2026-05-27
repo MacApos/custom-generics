@@ -48,18 +48,26 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
     @Override
     public V put(K key, V value) {
         int hash = hash(key);
-        AbstractBucket<K,V> bucket;
+        AbstractBucket<K, V> bucket;
         HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
+        objectObjectHashMap.put("", "");
         if ((bucket = table[hash]) == null) {
             table[hash] = MapLinkedList.of(key, value);
         } else {
-            if (bucket instanceof RedBlackTree<K, V> tree) {
-
-            } else {
-
+            bucket.putNode(key, value, hash);
+            if (bucket instanceof MapLinkedList<K, V> linkedList && linkedList.size() >= TREEIFY_THRESHOLD) {
+                treeify(linkedList, hash);
             }
         }
         return value;
+    }
+
+    public void treeify(MapLinkedList<K, V> linkedList, int hash) {
+
+    }
+
+    public void untreeify(RedBlackTree<K, V> tree, int hash) {
+
     }
 
     @Override

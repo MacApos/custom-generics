@@ -2,6 +2,11 @@ package com.map;
 
 public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, V> {
     public TreeNode<K, V> root;
+    private int size;
+
+    public int size() {
+        return size;
+    }
 
     private boolean isRed(TreeNode<K, V> node) {
         return node != null && node.red;
@@ -74,10 +79,12 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
         return false;
     }
 
-    public boolean add(K key, V value, int hash) {
+    @Override
+    public V putNode(K key, V value, int hash) {
         if (this.root == null) {
             this.root = new TreeNode<>(key, value, hash, false);
-            return true;
+            size = 1;
+            return value;
         }
 
         TreeNode<K, V> node = root;
@@ -90,9 +97,9 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
 
             int cmp = Integer.compare(hash, node.hash);
             int dir = cmp == 0 ? key.compareTo(node.key) : Math.max(0, cmp);
-            if(dir==0){
+            if (dir == 0) {
                 node.value = value;
-                return false;
+                return value;
             }
             TreeNode<K, V> child = node.link[dir];
             x.parent = node;
@@ -103,7 +110,8 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
             }
             node = child;
         }
-        return true;
+        size++;
+        return value;
     }
 
     public V getValue(K key, V value, int hash) {
@@ -111,7 +119,7 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
     }
 
     public void remove(K key, V value, int hash) {
-        TreeNode<K,V> node = null, child = root, y = null;
+        TreeNode<K, V> node = null, child = root, y = null;
         while (child != null) {
             node = child;
             if (node.value == value) {
@@ -128,31 +136,31 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
 
             // case2
             int nDir = invertDir(dir);
-            TreeNode<K,V> oppositeChild = node.link[nDir];
+            TreeNode<K, V> oppositeChild = node.link[nDir];
             if (isRed(oppositeChild)) {
                 singleRotation(node, nDir);
                 colorSwap(node, oppositeChild);
                 continue;
             }
 
-            TreeNode<K,V> parent = node.parent;
+            TreeNode<K, V> parent = node.parent;
             int siblingDir = invertDir(getIndex(node));
-            TreeNode<K,V> sibling;
+            TreeNode<K, V> sibling;
             if (node.parent == null || (sibling = parent.link[siblingDir]) == null) {
                 continue;
             }
 
             // case1
             int nSiblingDir = invertDir(siblingDir);
-            TreeNode<K,V> nephew = sibling.link[siblingDir];
-            TreeNode<K,V> oppositeNephew = sibling.link[nSiblingDir];
+            TreeNode<K, V> nephew = sibling.link[siblingDir];
+            TreeNode<K, V> oppositeNephew = sibling.link[nSiblingDir];
             if (!isRed(nephew) && !isRed(oppositeNephew)) {
                 colorFlip(parent, false);
                 continue;
             }
 
             // case3 and case4
-            TreeNode<K,V> grandparent = parent.parent;
+            TreeNode<K, V> grandparent = parent.parent;
             if (grandparent == null) {
                 continue;
             }
@@ -164,6 +172,7 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
             colorSwap(node, parent);
         }
 
+        // empty tree or no node
         if (y == null) {
             return;
         }
@@ -171,16 +180,15 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
         // only one node,
         // node.parent == null instead of node == root to avoid warning -
         // does the same thing but assures parent isn't null
+        size--;
         if (node.parent == null) {
             this.root = null;
             return;
         }
 
         y.value = node.value;
-        TreeNode<K,V> link = node.link[node.link[0] == null ? 1 : 0];
+        TreeNode<K, V> link = node.link[node.link[0] == null ? 1 : 0];
         node.parent.link[getIndex(node)] = link;
         node.parent = null;
     }
-
-
 }

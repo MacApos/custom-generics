@@ -15,7 +15,7 @@ class RedBlackTreeTest {
     @BeforeEach
     void setUp() {
         tree = new RedBlackTree<>();
-        tree.add(1, 1, 1);
+        tree.putNode(1, 1, 1);
         root = tree.root;
     }
 
@@ -33,11 +33,25 @@ class RedBlackTreeTest {
     }
 
     @Test
-    void shouldPutElementWhenItsHashIsUnique() {
-        tree.add(2, 1, 1);
+    void shouldPutElementWhenItDoesNotExists() {
+        tree.putNode(2, 1, 1);
         assertNotNull(root.link);
         assertEquals(2, root.link.length);
-
     }
+
+    @Test
+    void shouldNotPutElementWhenItExists() {
+    }
+
+    @Test
+    void shouldRemoveRoot() {}
+
+
+//    @Test
+//    void shouldRemoveRoot() {}
+//
+//
+//    @Test
+//    void shouldRemoveRoot() {}
 
 }

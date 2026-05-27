@@ -35,8 +35,8 @@ public class Main {
         linkedList2.removeNode(2, "two", 1);
 
         RedBlackTree<Integer, Integer> tree = new RedBlackTree<>();
-        tree.add(1,1,1);
-        tree.add(2,1,1);
+        tree.putNode(1,1,1);
+        tree.putNode(2,1,1);
 
         String[] strings1 = new String[2];
 
