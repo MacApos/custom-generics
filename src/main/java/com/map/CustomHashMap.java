@@ -1,39 +1,23 @@
 package com.map;
 
-import java.util.HashMap;
-
 public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K, V> {
     static final int DEFAULT_INITIAL_CAPACITY = 16;
-    static final float DEFAULT_LOAD_FACTOR = 0.75F;
     static final int TREEIFY_THRESHOLD = 8;
     static final int UNTREEIFY_THRESHOLD = 6;
 
-    AbstractBucket[] table;
     private int size;
-    private int capacity;
-    private final float loadFactor;
+    private final AbstractBucket[] table;
+    private final int capacity;
 
     public CustomHashMap() {
-        this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR);
+        this(DEFAULT_INITIAL_CAPACITY);
     }
 
     public CustomHashMap(int capacity) {
-        this(capacity, DEFAULT_LOAD_FACTOR);
-    }
-
-    public CustomHashMap(float loadFactor) {
-        this(DEFAULT_INITIAL_CAPACITY, loadFactor);
-    }
-
-    public CustomHashMap(int capacity, float loadFactor) {
         this.capacity = capacity;
-        this.loadFactor = loadFactor;
         table = new AbstractBucket[capacity];
     }
 
-    private int hash(K key) {
-        return (key.hashCode() & 0x7fffffff) % capacity;
-    }
 
     @Override
     public int size() {
@@ -45,14 +29,15 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
         return null;
     }
 
+
     @Override
     public V put(K key, V value) {
         int hash = hash(key);
         AbstractBucket<K, V> bucket;
-        HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
-        objectObjectHashMap.put("", "");
         if ((bucket = table[hash]) == null) {
-            table[hash] = MapLinkedList.of(key, value);
+            bucket = new MapLinkedList<>();
+            bucket.putNode(key, value, hash);
+            table[hash] = bucket;
         } else {
             bucket.putNode(key, value, hash);
             if (bucket instanceof MapLinkedList<K, V> linkedList && linkedList.size() >= TREEIFY_THRESHOLD) {
@@ -63,7 +48,13 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
     }
 
     public void treeify(MapLinkedList<K, V> linkedList, int hash) {
-
+        MapNode<K, V> node = linkedList.getFirst();
+        RedBlackTree<K, V> tree = new RedBlackTree<>();
+        while (node != null) {
+            tree.putNode(node.key, node.value, node.hash);
+            node = node.next;
+        }
+        table[hash] = tree;
     }
 
     public void untreeify(RedBlackTree<K, V> tree, int hash) {
@@ -78,6 +69,12 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
     @Override
     public V replace(K key, V oldValue, V newValue) {
         return null;
+    }
+
+    @Override
+    public int hash(K key) {
+        int i = (key.hashCode() & 0x7fffffff) % capacity;
+        return 1;
     }
 
 }

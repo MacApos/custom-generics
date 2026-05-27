@@ -3,7 +3,7 @@ package com.map;
 public interface AbstractMap<K, V> {
     int size();
 
-     V get(K key);
+    V get(K key);
 
     V put(K key, V value);
 
@@ -11,4 +11,5 @@ public interface AbstractMap<K, V> {
 
     V replace(K key, V oldValue, V newValue);
 
+    int hash(K key);
 }

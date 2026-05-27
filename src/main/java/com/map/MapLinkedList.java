@@ -2,11 +2,12 @@ package com.map;
 
 import com.collection.ValueBasedCollection;
 import com.list.CustomLinkedList;
+import lombok.Getter;
 
-public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K, V> implements ValueBasedCollection<V> {
+public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K, V>  {
 
+    @Getter
     private MapNode<K, V> first;
-    private MapNode<K, V> last;
     private int size;
 
     private final CustomLinkedList<V> linkedList = new CustomLinkedList<>();
@@ -15,41 +16,15 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
         return size;
     }
 
-
     @SafeVarargs
     public static <K extends Comparable<K>, V> MapLinkedList<K, V> of(K key, V... values) {
         MapLinkedList<K, V> mapLinkedList = new MapLinkedList<>();
         if (values != null) {
             for (V value : values) {
-                mapLinkedList.add(value);
+//                mapLinkedList.putNode(key, value);
             }
         }
         return mapLinkedList;
-    }
-
-    @Override
-    public V getValue(V value) {
-        return linkedList.getValue(value);
-    }
-
-    @Override
-    public V setValue(V oldValue, V newValue) {
-        return linkedList.setValue(oldValue, newValue);
-    }
-
-    @Override
-    public V removeValue(V value) {
-        return linkedList.removeValue(value);
-    }
-
-    @Override
-    public boolean contains(V value) {
-        return linkedList.contains(value);
-    }
-
-    @Override
-    public boolean add(V value) {
-        return linkedList.add(value);
     }
 
     @Override
@@ -75,6 +50,7 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
         prev.next = newNode;
         return value;
     }
+
 
     public MapNode<K, V> removeNode(K key, V value, int hash) {
         if (first == null) {

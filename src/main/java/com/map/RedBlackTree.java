@@ -95,12 +95,13 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
                 insertRotate(node);
             }
 
-            int cmp = Integer.compare(hash, node.hash);
-            int dir = cmp == 0 ? key.compareTo(node.key) : Math.max(0, cmp);
-            if (dir == 0) {
+            int cmp = hash == node.hash ? key.compareTo(node.key) : Integer.compare(hash, node.hash);
+            if (hash == 0) {
                 node.value = value;
                 return value;
             }
+            int dir = Math.max(0, cmp);
+
             TreeNode<K, V> child = node.link[dir];
             x.parent = node;
             if (child == null) {
