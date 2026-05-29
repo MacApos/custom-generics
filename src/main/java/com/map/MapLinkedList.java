@@ -12,6 +12,7 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
 
     private final CustomLinkedList<V> linkedList = new CustomLinkedList<>();
 
+    @Override
     public int size() {
         return size;
     }
@@ -51,8 +52,8 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
         return value;
     }
 
-
-    public MapNode<K, V> removeNode(K key, V value, int hash) {
+    @Override
+    public V removeNode(K key, int hash) {
         if (first == null) {
             return null;
         }
@@ -67,11 +68,7 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
             node = node.next;
         }
 
-        // primitives are autoboxed to reference
-        // v == value - equal primitives - false
-        // v != value - unequal primitives or references - true
-        V v;
-        if (node == null || ((v = node.value) != value && (value == null || !value.equals(v)))) {
+        if (node == null ) {
             return null;
         }
 
@@ -82,7 +79,7 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
             prev.next = node.next;
         }
         node.next = null;
-        return node;
+        return node.value;
     }
 
     public MapNode<K, V> getNode(K key, int hash) {
