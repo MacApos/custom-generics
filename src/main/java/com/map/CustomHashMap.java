@@ -19,10 +19,13 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
         table = new AbstractBucket[capacity];
     }
 
+    private int hash(K key) {
+        return (key.hashCode() & 0x7fffffff) % capacity;
+    }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
@@ -44,6 +47,7 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
         if ((bucket = table[idx]) == null) {
             bucket = new MapLinkedList<>();
             table[idx] = bucket;
+            size++;
         } else {
             if (bucket instanceof MapLinkedList<K, V> linkedList && linkedList.size() >= TREEIFY_THRESHOLD) {
                 treeify(linkedList, hash, idx);
@@ -55,7 +59,6 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
         return value;
     }
 
-
     @Override
     public V remove(K key) {
         int hash = hash(key);
@@ -65,26 +68,18 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
             return null;
         }
         V value = bucket.removeNode(key, hash);
-
+        if (bucket.size() == 0) {
+            table[idx] = null;
+            size--;
+            return value;
+        }
         if (bucket instanceof RedBlackTree<K, V> tree && tree.size() < UNTREEIFY_THRESHOLD) {
             untreeify(tree, hash, idx);
         }
-
         return value;
     }
 
-    @Override
-    public V replace(K key, V oldValue, V newValue) {
-        return null;
-    }
-
-    @Override
-    public int hash(K key) {
-        int i = (key.hashCode() & 0x7fffffff) % capacity;
-        return 1;
-    }
-
-    public void treeify(MapLinkedList<K, V> linkedList, int hash, int idx) {
+    private void treeify(MapLinkedList<K, V> linkedList, int hash, int idx) {
         MapNode<K, V> node = linkedList.getFirst();
         RedBlackTree<K, V> tree = new RedBlackTree<>();
         while (node != null) {
@@ -94,7 +89,7 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
         table[idx] = tree;
     }
 
-    public void untreeify(RedBlackTree<K, V> tree, int hash, int idx) {
+    private void untreeify(RedBlackTree<K, V> tree, int hash, int idx) {
         MapLinkedList<K, V> linkedList = new MapLinkedList<>();
         ArrayDeque<TreeNode<K, V>> deque = new ArrayDeque<>();
 
@@ -115,5 +110,4 @@ public class CustomHashMap<K extends Comparable<K>, V> implements AbstractMap<K,
         }
         table[idx] = linkedList;
     }
-
 }

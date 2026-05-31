@@ -9,7 +9,4 @@ public interface AbstractMap<K, V> {
 
     V remove(K key);
 
-    V replace(K key, V oldValue, V newValue);
-
-    int hash(K key);
 }

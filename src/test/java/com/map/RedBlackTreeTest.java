@@ -8,7 +8,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RedBlackTreeTest {
-
     private RedBlackTree<Integer, Integer> insert;
     private RedBlackTree<Integer, Integer> remove;
     private TreeNode<Integer, Integer> root;
@@ -230,10 +229,5 @@ class RedBlackTreeTest {
         assertValueAndColor(leftsRightChild, false, 40);
         assertNull(rightsLeftChild);
         assertNull(rightsRightChild);
-    }
-
-    @Test
-    void shouldTreeify(){
-        System.out.println(remove.size());
     }
 }
