@@ -1,31 +1,16 @@
 package com.map;
 
-import com.collection.ValueBasedCollection;
-import com.list.CustomLinkedList;
 import lombok.Getter;
 
-public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K, V>  {
+public class MapLinkedList<K extends Comparable<K>, V> implements AbstractBucket<K, V>  {
 
     @Getter
     private MapNode<K, V> first;
     private int size;
 
-    private final CustomLinkedList<V> linkedList = new CustomLinkedList<>();
-
     @Override
     public int size() {
         return size;
-    }
-
-    @SafeVarargs
-    public static <K extends Comparable<K>, V> MapLinkedList<K, V> of(K key, V... values) {
-        MapLinkedList<K, V> mapLinkedList = new MapLinkedList<>();
-        if (values != null) {
-            for (V value : values) {
-//                mapLinkedList.putNode(key, value);
-            }
-        }
-        return mapLinkedList;
     }
 
     @Override
@@ -67,11 +52,9 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
             prev = node;
             node = node.next;
         }
-
         if (node == null ) {
             return null;
         }
-
         size--;
         if (prev == null) {
             first = first.next;
@@ -82,7 +65,16 @@ public class MapLinkedList<K extends Comparable<K>, V> extends AbstractBucket<K,
         return node.value;
     }
 
-    public MapNode<K, V> getNode(K key, int hash) {
+
+    public V getNode(K key, int hash) {
+        MapNode<K, V> node = first;
+        K k;
+        while (node != null) {
+            if (node.hash == hash && ((k = node.key) == key || key != null && key.equals(k))) {
+                return node.value;
+            }
+            node = node.next;
+        }
         return null;
     }
 }

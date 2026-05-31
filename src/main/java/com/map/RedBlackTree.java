@@ -1,6 +1,6 @@
 package com.map;
 
-public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, V> {
+public class RedBlackTree<K extends Comparable<K>, V> implements AbstractBucket<K, V> {
     public TreeNode<K, V> root;
     private int size;
 
@@ -115,7 +115,16 @@ public class RedBlackTree<K extends Comparable<K>, V> extends AbstractBucket<K, 
         return value;
     }
 
-    public V getValue(K key, V value, int hash) {
+    public V getNode(K key, int hash) {
+        TreeNode<K, V> node = root;
+        while (node != null) {
+            int cmp = hash == node.hash ? key.compareTo(node.key) : Integer.compare(hash, node.hash);
+            if (cmp == 0) {
+                return node.value;
+            }
+            int dir = Math.max(0, cmp);
+            node = node.link[dir];
+        }
         return null;
     }
 

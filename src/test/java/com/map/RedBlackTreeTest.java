@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RedBlackTreeTest {
 
-    private RedBlackTree<Integer, Integer> insertRedBlackTree;
-    private RedBlackTree<Integer, Integer> redBlackTree;
+    private RedBlackTree<Integer, Integer> insert;
+    private RedBlackTree<Integer, Integer> remove;
     private TreeNode<Integer, Integer> root;
     private TreeNode<Integer, Integer> left;
     private TreeNode<Integer, Integer> right;
@@ -21,16 +21,16 @@ class RedBlackTreeTest {
 
     @BeforeEach
     void setUp() {
-        insertRedBlackTree = new RedBlackTree<>();
-        redBlackTree = new RedBlackTree<>();
+        insert = new RedBlackTree<>();
+        remove = new RedBlackTree<>();
         for (Integer i : List.of(60, 40, 70, 20, 50, 10)) {
-            redBlackTree.putNode(i, 10, i);
+            remove.putNode(i, 10, i);
         }
     }
 
     void putNodes(Integer... values) {
         for (Integer value : values) {
-            insertRedBlackTree.putNode(value, value, value);
+            insert.putNode(value, value, value);
         }
     }
 
@@ -62,7 +62,7 @@ class RedBlackTreeTest {
     @Test
     void shouldPutElementWhenTreeRootIsEmpty() {
         putNodes(10);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 10);
     }
 
@@ -76,7 +76,7 @@ class RedBlackTreeTest {
     @Test
     void shouldPutNodeWhenItDoesNotExist() {
         putNodes(10, 90);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 10);
         assertValueAndColor(right, true, 90);
     }
@@ -84,14 +84,14 @@ class RedBlackTreeTest {
     @Test
     void shouldNotPutNodeWhenItExists() {
         putNodes(10, 10);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 10);
     }
 
     @Test
     void shouldPutLeftNodeWhenItHasLeftRedParentAndBlackUncle() {
         putNodes(10, 90, 20, 80, 50);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 20);
         assertValueAndColor(left, false, 10);
         assertValueAndColor(right, false, 80);
@@ -102,7 +102,7 @@ class RedBlackTreeTest {
     @Test
     void shouldPutRightNodeWhenItHasRightRedParentAndBlackUncle() {
         putNodes(10, 90, 20, 80, 50, 30, 40, 60, 70);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 40);
         assertValueAndColor(left, false, 20);
         assertValueAndColor(right, false, 80);
@@ -117,7 +117,7 @@ class RedBlackTreeTest {
     @Test
     void shouldPutLeftNodeWhenItHasRightRedParentAndBlackUncle() {
         putNodes(10, 90, 20);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 20);
         assertValueAndColor(left, true, 10);
         assertValueAndColor(right, true, 90);
@@ -126,7 +126,7 @@ class RedBlackTreeTest {
     @Test
     void shouldPutRightNodeWhenItHasLeftRedParentAndBlackUncle() {
         putNodes(10, 90, 20, 80, 50, 30, 40);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 20);
         assertValueAndColor(left, false, 10);
         assertValueAndColor(right, true, 80);
@@ -139,7 +139,7 @@ class RedBlackTreeTest {
     @Test
     void shouldPutNodeWhenItHasRedParentAndRedUncle() {
         putNodes(10, 90, 20, 80);
-        setUpTree(insertRedBlackTree);
+        setUpTree(insert);
         assertValueAndColor(root, false, 20);
         assertValueAndColor(left, false, 10);
         assertValueAndColor(right, false, 90);
@@ -148,8 +148,8 @@ class RedBlackTreeTest {
 
     @Test
     void shouldRemoveNodeRoot() {
-        redBlackTree.removeNode(60, 60);
-        setUpTree(redBlackTree);
+        remove.removeNode(60, 60);
+        setUpTree(remove);
         assertValueAndColor(root, false, 50);
         assertValueAndColor(left, true, 20);
         assertValueAndColor(right, false, 70);
@@ -159,8 +159,8 @@ class RedBlackTreeTest {
 
     @Test
     void shouldNotRemoveNodeNodeWhenItDoesNotExist() {
-        redBlackTree.removeNode(105, 105);
-        setUpTree(redBlackTree);
+        remove.removeNode(105, 105);
+        setUpTree(remove);
         assertValueAndColor(root, false, 40);
         assertValueAndColor(left, false, 20);
         assertValueAndColor(right, false, 60);
@@ -170,9 +170,9 @@ class RedBlackTreeTest {
     }
 
     @Test
-    void shouldRemoveNodeNodeWhenItDoesNotExist() {
-        redBlackTree.removeNode(10, 10);
-        setUpTree(redBlackTree);
+    void shouldRemoveNodeWhenItExists() {
+        remove.removeNode(10, 10);
+        setUpTree(remove);
         assertValueAndColor(root, false, 60);
         assertValueAndColor(left, true, 40);
         assertValueAndColor(right, false, 70);
@@ -181,10 +181,10 @@ class RedBlackTreeTest {
     }
 
     @Test
-    void shouldRemoveNodeBlackNodeWhenItHasRedParentAndBlackSibling() {
-        redBlackTree.removeNode(10, 10);
-        redBlackTree.removeNode(50, 50);
-        setUpTree(redBlackTree);
+    void shouldRemoveBlackNodeWhenItHasRedParentAndBlackSibling() {
+        remove.removeNode(10, 10);
+        remove.removeNode(50, 50);
+        setUpTree(remove);
         assertValueAndColor(root, false, 60);
         assertValueAndColor(left, false, 40);
         assertValueAndColor(right, false, 70);
@@ -192,10 +192,10 @@ class RedBlackTreeTest {
     }
 
     @Test
-    void shouldRemoveNodeBlackNodeWhenItHasBlackParentAndRedSibling() {
-        redBlackTree.putNode(80, 80, 80);
-        redBlackTree.removeNode(70, 70);
-        setUpTree(redBlackTree);
+    void shouldRemoveBlackNodeWhenItHasBlackParentAndRedSibling() {
+        remove.putNode(80, 80, 80);
+        remove.removeNode(70, 70);
+        setUpTree(remove);
         assertValueAndColor(root, false, 40);
         assertValueAndColor(left, false, 20);
         assertValueAndColor(right, true, 60);
@@ -205,11 +205,11 @@ class RedBlackTreeTest {
     }
 
     @Test
-    void shouldRemoveNodeBlackNodeWhenItHasRedParentRedSiblingAndLeftRedNephew() {
-        redBlackTree.removeNode(10, 10);
-        redBlackTree.putNode(30, 30, 30);
-        redBlackTree.removeNode(50, 50);
-        setUpTree(redBlackTree);
+    void shouldRemoveBlackNodeWhenItHasRedParentAndSiblingAndLeftNephew() {
+        remove.removeNode(10, 10);
+        remove.putNode(30, 30, 30);
+        remove.removeNode(50, 50);
+        setUpTree(remove);
         assertValueAndColor(root, false, 60);
         assertValueAndColor(left, true, 30);
         assertValueAndColor(right, false, 70);
@@ -220,9 +220,9 @@ class RedBlackTreeTest {
     }
 
     @Test
-    void shouldRemoveNodeBlackNodeWhenItHasRedParentRedSiblingAndRightRedNephew() {
-        redBlackTree.removeNode(50, 50);
-        setUpTree(redBlackTree);
+    void shouldRemoveBlackNodeWhenItHasRedParentAndSiblingAndRightNephew() {
+        remove.removeNode(50, 50);
+        setUpTree(remove);
         assertValueAndColor(root, false, 60);
         assertValueAndColor(left, true, 20);
         assertValueAndColor(right, false, 70);
@@ -230,5 +230,10 @@ class RedBlackTreeTest {
         assertValueAndColor(leftsRightChild, false, 40);
         assertNull(rightsLeftChild);
         assertNull(rightsRightChild);
+    }
+
+    @Test
+    void shouldTreeify(){
+        System.out.println(remove.size());
     }
 }

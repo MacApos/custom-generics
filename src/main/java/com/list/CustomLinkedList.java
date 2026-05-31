@@ -1,11 +1,8 @@
 package com.list;
 
-import com.collection.IndexBasedCollection;
-import com.collection.ValueBasedCollection;
-
 import java.util.function.Supplier;
 
-public class CustomLinkedList<V> implements IndexBasedCollection<V>, ValueBasedCollection<V> {
+public class CustomLinkedList<V> implements AbstractLinkedList<V> {
     private int size;
     private Node<V> first;
     private Node<V> last;
@@ -132,13 +129,6 @@ public class CustomLinkedList<V> implements IndexBasedCollection<V>, ValueBasedC
     }
 
     @Override
-    public V getValue(V value) {
-        checkValue(value);
-        Node<V> node = getNodeByValue(value);
-        return node == null ? null : node.value;
-    }
-
-    @Override
     public V set(int index, V newValue) {
         checkIndex(index);
         checkValue(newValue);
@@ -146,7 +136,7 @@ public class CustomLinkedList<V> implements IndexBasedCollection<V>, ValueBasedC
     }
 
     @Override
-    public V setValue(V oldValue, V newValue) {
+    public V set(V oldValue, V newValue) {
         checkValue(oldValue);
         checkValue(newValue);
         return setNode(getNodeByValue(oldValue), newValue);
@@ -159,7 +149,7 @@ public class CustomLinkedList<V> implements IndexBasedCollection<V>, ValueBasedC
     }
 
     @Override
-    public V removeValue(V value) {
+    public V remove(V value) {
         checkValue(value);
         return removeNode(first.value.equals(value), () -> getPrevNodeByValue(value));
     }

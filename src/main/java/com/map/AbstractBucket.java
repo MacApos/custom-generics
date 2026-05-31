@@ -1,11 +1,13 @@
 package com.map;
 
-public abstract class AbstractBucket<K extends Comparable<K>, V> {
+public interface AbstractBucket<K extends Comparable<K>, V> {
 
-    abstract public V putNode(K key, V value, int hash);
+    V putNode(K key, V value, int hash);
 
-    abstract public V removeNode(K key, int hash);
+    V removeNode(K key, int hash);
 
-    abstract int size();
+    V getNode(K key, int hash);
+
+    int size();
 
 }
