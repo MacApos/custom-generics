@@ -1,11 +1,15 @@
 package com.list;
 
+import lombok.Getter;
+
 import java.util.function.Supplier;
 
 public class CustomLinkedList<V> implements AbstractLinkedList<V> {
-    private int size;
+    @Getter
     private Node<V> first;
+    @Getter
     private Node<V> last;
+    private int size;
 
     @SafeVarargs
     public static <V> CustomLinkedList<V> of(V... values) {
@@ -16,14 +20,6 @@ public class CustomLinkedList<V> implements AbstractLinkedList<V> {
             }
         }
         return customLinkedList;
-    }
-
-    public V getFirst() {
-        return first.value;
-    }
-
-    public V getLast() {
-        return last.value;
     }
 
     private void checkIndex(int index) {
@@ -129,6 +125,18 @@ public class CustomLinkedList<V> implements AbstractLinkedList<V> {
     }
 
     @Override
+    public V remove(int index) {
+        checkIndex(index);
+        return removeNode(index == 0, () -> getNodeByIndex(index - 1));
+    }
+
+    @Override
+    public V remove(V value) {
+        checkValue(value);
+        return removeNode(first.value.equals(value), () -> getPrevNodeByValue(value));
+    }
+
+    @Override
     public V set(int index, V newValue) {
         checkIndex(index);
         checkValue(newValue);
@@ -140,17 +148,5 @@ public class CustomLinkedList<V> implements AbstractLinkedList<V> {
         checkValue(oldValue);
         checkValue(newValue);
         return setNode(getNodeByValue(oldValue), newValue);
-    }
-
-    @Override
-    public V remove(int index) {
-        checkIndex(index);
-        return removeNode(index == 0, () -> getNodeByIndex(index - 1));
-    }
-
-    @Override
-    public V remove(V value) {
-        checkValue(value);
-        return removeNode(first.value.equals(value), () -> getPrevNodeByValue(value));
     }
 }

@@ -3,7 +3,6 @@ package com.map;
 import lombok.Getter;
 
 public class MapLinkedList<K extends Comparable<K>, V> implements AbstractBucket<K, V>  {
-
     @Getter
     private MapNode<K, V> first;
     private int size;
@@ -11,6 +10,19 @@ public class MapLinkedList<K extends Comparable<K>, V> implements AbstractBucket
     @Override
     public int size() {
         return size;
+    }
+
+    @Override
+    public V getNode(K key, int hash) {
+        MapNode<K, V> node = first;
+        K k;
+        while (node != null) {
+            if (node.hash == hash && ((k = node.key) == key || key != null && key.equals(k))) {
+                return node.value;
+            }
+            node = node.next;
+        }
+        return null;
     }
 
     @Override
@@ -66,15 +78,4 @@ public class MapLinkedList<K extends Comparable<K>, V> implements AbstractBucket
     }
 
 
-    public V getNode(K key, int hash) {
-        MapNode<K, V> node = first;
-        K k;
-        while (node != null) {
-            if (node.hash == hash && ((k = node.key) == key || key != null && key.equals(k))) {
-                return node.value;
-            }
-            node = node.next;
-        }
-        return null;
-    }
 }

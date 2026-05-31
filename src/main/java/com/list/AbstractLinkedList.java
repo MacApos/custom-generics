@@ -7,11 +7,11 @@ public interface AbstractLinkedList<V> {
 
     V get(int index);
 
-    V set(int index, V newValue);
-
-    V set(V oldValue, V newValue);
-
     V remove(int index);
 
     V remove(V value);
+
+    V set(int index, V newValue);
+
+    V set(V oldValue, V newValue);
 }
